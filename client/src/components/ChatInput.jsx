@@ -38,7 +38,7 @@ const ChatInput = ({handleSendMsg}) => {
                 </div>
             </div>
             <form className='input-container' onSubmit={(e)=>sendChat(e)}>
-                <input text="text" placeholder='type you rmessage here' value={msg} onChange={(e) => { setMsg(e.target.value) }} />
+                <input text="text" placeholder='type your message here' value={msg} onChange={(e) => { setMsg(e.target.value) }} />
                 <button className='submit'>
                     <IoMdSend />
                 </button>

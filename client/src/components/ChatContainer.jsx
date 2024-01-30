@@ -1,12 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
 import Logout from './Logout';
 import ChatInput from './ChatInput';
 import Messages from './Messages';
 import axios from 'axios';
-import { sendMessageRoute } from '../utils/APIRoutes';
+import { getAllMessagesRoute, sendMessageRoute } from '../utils/APIRoutes';
 
 const ChatContainer = ({ currentChat, currentUser }) => {
+  const [messages, setMessages] = useState([]);
+
+
+
+  useEffect(()=>{
+    async function func(){
+      const response = await axios.post(getAllMessagesRoute, {
+        from:currentUser._id,
+        to: currentChat._id,
+
+      })
+      setMessages(response.data);
+    };
+    func();
+  }, [currentChat])
+
+
+
+
   const handleSendMsg = async (msg) => {
     await axios.post(sendMessageRoute, {
       from:currentUser._id,
@@ -30,7 +49,23 @@ const ChatContainer = ({ currentChat, currentUser }) => {
               </div>
               <Logout />
             </div>
-            <Messages />
+            <div className='chat-messages'>
+              {
+                messages.map((message) => {
+                  return (
+                    <div>
+                    <div className={`message ${message.fromSelf ? "sended" : "received" }`}>
+                      <div className='content'>
+                        <p>
+                          {message.message}
+                        </p>
+                      </div>
+                    </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
             <ChatInput handleSendMsg={handleSendMsg} />
           </Container>
 
@@ -44,7 +79,7 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 80% 10%;
   gap: 0.1rem;
-  overflow: hidden;
+  overflow: auto;
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     grid-template-rows: 15% 70% 15%;
   }
@@ -74,7 +109,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    overflow: auto;
+    overflow: hidden;
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
@@ -99,13 +134,13 @@ const Container = styled.div`
       }
     }
     .sended {
-      justify-content: flex-end;
+      justify-content: flex-start;
       .content {
         background-color: #4f04ff21;
       }
     }
-    .recieved {
-      justify-content: flex-start;
+    .received {
+      justify-content: flex-end;
       .content {
         background-color: #9900ff20;
       }
